@@ -1,4 +1,5 @@
 const express = require('express')
+const methodOverride = require('method-override')
 const exphbs = require('express-handlebars');
 const app = express()
 const mongoose = require('mongoose');
@@ -9,6 +10,7 @@ mongoose.connect('mongodb://localhost/rp-term2');
 app.engine('hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
 app.set('view engine', 'hbs');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride('_method'))
 
 const Review = mongoose.model('Review', {
   title: String,
@@ -57,6 +59,24 @@ app.get('/reviews/:id', (req, res) => {
       console.log(err.message);
     })
 });
+
+// EDIT
+app.get('/reviews/:id/edit', (req, res) => {
+  Review.findById(req.params.id, function(err, review) {
+    res.render('reviews-edit', {review: review});
+  })
+})
+
+// UPDATE
+app.put('/reviews/:id', (req, res) => {
+  Review.findByIdAndUpdate(req.params.id, req.body)
+    .then(review => {
+      res.redirect(`/reviews/${review._id}`)
+    })
+    .catch(err => {
+      console.log(err.message)
+    })
+})
 
 app.listen(3000, () => {
   console.log('App listening on port 3000!')
