@@ -2,13 +2,17 @@ const express = require('express')
 const exphbs = require('express-handlebars');
 const app = express()
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
 mongoose.connect('mongodb://localhost/rp-term2');
 
 app.engine('hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
 app.set('view engine', 'hbs');
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const Review = mongoose.model('Review', {
   title: String,
+  description: String,
   movieTitle: String
 });
 
@@ -19,12 +23,6 @@ const Review = mongoose.model('Review', {
 //   { title: "Not Bad", movieTitle: "Halloween" }
 // ]
 
-
-// INDEX
-// app.get('/', (req, res) => {
-//   res.render('reviews-index', { reviews: reviews });
-// })
-
 // INDEX
 app.get('/', (req, res) => {
   Review.find()
@@ -34,6 +32,20 @@ app.get('/', (req, res) => {
     .catch(err => {
       console.log(err);
     })
+})
+
+app.get('/reviews/new', (req, res) => {
+  res.render('reviews-new', {});
+})
+
+// CREATE
+app.post('/reviews', (req, res) => {
+  Review.create(req.body).then((review) => {
+    console.log(review);
+    res.redirect('/');
+  }).catch((err) => {
+    console.log(err.message);
+  })
 })
 
 app.listen(3000, () => {
