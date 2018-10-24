@@ -5,7 +5,9 @@ const app = express()
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const reviews = require('./controllers/reviews');
-const Review = require('./models/review')
+const comments = require('./controllers/comments');
+const Review = require('./models/review');
+const Comment = require('./models/comment');
 
 
 app.engine('hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
@@ -14,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'))
 
 reviews(app)
+comments(app)
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {

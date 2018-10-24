@@ -1,4 +1,5 @@
 const Review = require('../models/review')
+const Comment = require('../models/comment')
 
 function reviews (app) {
 
@@ -26,7 +27,9 @@ function reviews (app) {
     // SHOW
     app.get('/reviews/:id', (req, res) => {
         Review.findById(req.params.id).then((review) => {
-          res.render('reviews-show', { review: review })
+            Comment.find({reviewId: req.params.id}).then(comments => {
+                res.render('reviews-show', { review: review, comments: comments })
+            })
         }).catch((err) => {
           console.log(err.message);
         })
